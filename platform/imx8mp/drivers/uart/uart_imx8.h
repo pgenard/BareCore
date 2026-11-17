@@ -27,7 +27,7 @@ extern volatile unsigned int rx_count;
 
 void uart_init(void);
 void uart_putchar(unsigned char);
-void uart_write(const unsigned char*);
+void uart_write(const char*);
 unsigned char uart_getchar(void);
 void interrupt_enable_bits(void);
 void uart_irq_handler(struct irq_frame*);

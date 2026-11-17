@@ -521,7 +521,7 @@ int imx8mp_pll_validate_descriptors(void)
         const imx8mp_pll_desc_t *desc =
             &imx8mp_pll_descriptions[i];
 
-        if (desc->name == 0)
+        if (desc->name[0] == '\0')
             return -1;
 
         if (desc->base > IMX8MP_ANALOG_SIZE)

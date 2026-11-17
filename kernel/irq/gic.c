@@ -36,9 +36,8 @@ void gic_redistributor_wake(void) {
 }
 
 void gic_disable_distributor(void) {
-    unsigned int ctlr;
+  // unsigned int ctlr = GICD_CTLR;
 
-    ctlr = GICD_CTLR;
     GICD_CTLR = 0;
 
     asm volatile("dsb sy");

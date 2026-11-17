@@ -18,10 +18,8 @@ static void shell_reset_line(void) {
 static void shell_execute(void) {
     buffer[pos] = '\0';
 
-    if (pos > 0)
-    {
-        if (!strcmp(buffer, "reboot"))
-        {
+    if (pos > 0) {
+        if (!strcmp(buffer, "reboot")) {
             shell_reset_line();
             watchdog_reboot();
             return;
@@ -49,13 +47,13 @@ void shell_task(void) {
     if (c == '\r') {
         uart_putchar('\n');
         shell_execute();
+
         return;
     }
 
     if (c == '\b' || c == 0x7F) {
         if (pos > 0) {
-            pos--;
-            uart_write("\b \b");
+            pos--; uart_write("\b \b");
         }
 
         return;

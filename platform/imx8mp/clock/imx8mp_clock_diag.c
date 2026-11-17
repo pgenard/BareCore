@@ -2,7 +2,7 @@
 #include "imx8mp_clock.h"
 #include "imx8mp_clock_parent.h"
 
-static const imx8mp_pll_desc_t *pll_list = imx8mp_pll_descriptions;
+// static const imx8mp_pll_desc_t *pll_list = imx8mp_pll_descriptions;
 
 static unsigned long frequency_mhz(unsigned long hz) {
     return hz / 1000000UL;
@@ -35,10 +35,7 @@ static const imx8mp_clock_parent_t gpt1_parents[8] = {
 };
 
 
-static void build_parent_frequencies(
-    const imx8mp_clock_parent_t *source,
-    unsigned long *destination)
-{
+static void build_parent_frequencies(const imx8mp_clock_parent_t *source, unsigned long *destination) {
     unsigned int i;
 
     for (i = 0; i < 8; i++) {
@@ -46,18 +43,13 @@ static void build_parent_frequencies(
             destination[i] = 0;
         }
 	else {
-            destination[i] =
-                imx8mp_clock_parent_get(source[i]);
+            destination[i] = imx8mp_clock_parent_get(source[i]);
         }
     }
 }
 
 
-static void clock_dump_root(
-    const char *name,
-    unsigned long offset,
-    const imx8mp_clock_parent_t *parent_table)
-{
+static void clock_dump_root(const char *name, unsigned long offset, const imx8mp_clock_parent_t *parent_table) {
     unsigned long parents[8];
 
     imx8mp_root_info_t root;
@@ -130,8 +122,8 @@ static void clock_dump_plls(void) {
     );
 
     for (i = 0; i < imx8mp_pll_description_count; i++) {
-        const imx8mp_pll_desc_t *desc =
-            &pll_list[i];
+        // const imx8mp_pll_desc_t *desc =
+        // &pll_list[i];
 
         uart_write(imx8mp_pll_descriptions[i].name);
         uart_write("     ");
@@ -190,66 +182,16 @@ static void clock_dump_plls(void) {
         uart_write("     ");
 
 
-        uart_write(
-            info.locked ? "YES" : "NO"
-        );
-
+        uart_write(info.locked ? "YES" : "NO");
         uart_write("      ");
 
 
-        uart_write(
-            info.bypassed ? "YES" : "NO"
-        );
-
+        uart_write(info.bypassed ? "YES" : "NO");
         uart_write("       ");
 
 
-        uart_write(
-            info.enabled ? "YES" : "NO"
-        );
-
+        uart_write(info.enabled ? "YES" : "NO");
         uart_write("\n");
-
-        /* Detailed registers 
-
-        uart_write("GEN_CTRL = ");
-
-        uart_print_hex(info.gen_ctrl);
-
-        uart_write(" FDIV0 = ");
-
-        uart_print_hex(info.fdiv_ctl0);
-
-
-        if (desc->has_fractional_divider) {
-
-            uart_write(" FDIV1 = ");
-
-            uart_print_hex(info.fdiv_ctl1);
-
-        } else {
-
-            uart_write(" LOCK_CTRL = ");
-
-            uart_print_hex(info.lock_ctrl);
-	    } */
-
-        /* Bypass diagnostics 
-
-        uart_write(" INTERNAL_BYPASS = ");
-
-        uart_write(
-            info.internal_bypass ? "YES" : "NO"
-        );
-
-        uart_write(" OUTPUT_BYPASS = ");
-
-        uart_write(
-            info.output_bypass ? "YES" : "NO"
-        );
-
-        uart_write("\n");
-	} */
     }
     
     uart_write(
@@ -280,20 +222,17 @@ void imx8mp_clock_dump(void)
         "------------------------------------------------\n"
     );
 
-
     clock_dump_root(
         "UART1",
         CCM_UART1_ROOT,
         uart1_parents
     );
 
-
     clock_dump_root(
         "GPT1",
         CCM_GPT1_ROOT,
         gpt1_parents
     );
-
 
     uart_write(
         "------------------------------------------------\n"

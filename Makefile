@@ -7,9 +7,9 @@ OBJCOPY = $(CROSS)objcopy
 
 TARGET = hello
 
-CFLAGS = -mcpu=cortex-a53 -ffreestanding -Wextra -MMD -MP \
-         -Iinclude -Ilib -Ishell \
-         -Ikernel/irq -Ikernel/scheduler -Ikernel/time \
+CFLAGS = -mcpu=cortex-a53 -ffreestanding -Wall -Werror -Wextra -MMD -MP \
+         -Iinclude -Ilib -Ishell -Ikernel/irq \
+         -Ikernel/scheduler -Ikernel/time \
          -Iplatform/imx8mp -Iplatform/imx8mp/clock \
          -Iplatform/imx8mp/drivers/uart \
          -Iplatform/imx8mp/drivers/gpt \

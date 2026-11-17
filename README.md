@@ -7,7 +7,6 @@
 A simple command-line interface illustrates how UART interrupts, exception handling, timer configuration and low-level hardware access work together in a minimal bare-metal environment.
 
 ### Features
-- Modular modules,
 - Bare-metal ARMv8-A startup code,
 - EL2 exception vector table,
 - GICv3 initialization and interrupt routing,
@@ -21,6 +20,7 @@ A simple command-line interface illustrates how UART interrupts, exception handl
 - Software IRQ handler,
 - Uptime command,
 - Cooperative scheduler,
+- Idle state,
 - Clock tree description.
 
 ### Hints
@@ -33,11 +33,11 @@ Our UART base register is mapped at *0x30860000* address.
 
 ### Toolchain
 
-The project uses the ARM GNU bare-metal toolchain: [ARM Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+This project uses the ARM GNU bare-metal toolchain: [ARM Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
 
-## Compiling
+## Makefile
 
-### Makefile
+### Compiling
 ```bash
 $ make
 ...
@@ -49,6 +49,7 @@ $ make
 ./aarch64-none-elf-objcopy -O binary hello.elf hello.bin
 ```
 
+### Cleaning
 ```bash
 $ make clean
 ...
@@ -74,7 +75,7 @@ Unknown command
 Command> hello
 Hello !
 Command> uname
-[Bare-Metal i.MX8MP by Pierre GENARD (PGEN) #9]
+[Bare-Metal i.MX8MP by Pierre GENARD (PGEN) #10]
   UART Driver with RX Interrupts
   UART Driver with TX Polling
   UART Circular Buffer
@@ -85,12 +86,14 @@ Command> uname
   Uptime Command
   Cooperative Scheduler
   Clock Tree Description
+  Idle State (Low Power)
 Command> help
 Commands:
   clock
   gpt <seconds>
   hello
   help
+  idle
   md <address>
   reboot
   time
@@ -101,12 +104,12 @@ On Time !
 Command>
 ```
 
-## Debugging
+### Debugging
 ```bash
 $ telnet localhost 1234
 ```
 
-## Notes
+### Notes
 This **BareCore** version provides modularity and fixes several bugs.
 
 ## Author

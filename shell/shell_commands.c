@@ -4,8 +4,10 @@
 #include "string.h"
 #include "systime.h"
 #include "imx8mp_clock.h"
+#include "scheduler.h"
 
 #define GPT1_BASE 0x302D0000UL
+#define GICD_BASE 0x38800000UL
 
 #define GPT_PR   (*(volatile unsigned int *)(GPT1_BASE + 0x04))
 #define GPT_IR   (*(volatile unsigned int *)(GPT1_BASE + 0x0C))
@@ -14,19 +16,11 @@
 #define GPT_CNT  (*(volatile unsigned int *)(GPT1_BASE + 0x24))
 #define GPT_OCR1 (*(volatile unsigned int *)(GPT1_BASE + 0x10))
 
-#define GICD_BASE 0x38800000UL
+#define GICD_ISENABLER(n) (*(volatile unsigned int *)(GICD_BASE + 0x100 + (((n) / 32) * 4)))
+#define GICD_IGROUPR(n)   (*(volatile unsigned int *)(GICD_BASE + 0x080 + (((n) / 32) * 4)))
+#define GICD_IROUTER(n)   (*(volatile unsigned long long *)(GICD_BASE + 0x6000 + ((n) * 8)))
 
-#define GICD_ISENABLER(n) \
-    (*(volatile unsigned int *)(GICD_BASE + 0x100 + (((n) / 32) * 4)))
-
-#define GICD_IGROUPR(n) \
-    (*(volatile unsigned int *)(GICD_BASE + 0x080 + (((n) / 32) * 4)))
-
-#define GICD_IROUTER(n) \
-    (*(volatile unsigned long long *)(GICD_BASE + 0x6000 + ((n) * 8)))
-
-#define GICD_CTLR \
-    (*(volatile unsigned int *)(GICD_BASE + 0x0000))
+#define GICD_CTLR         (*(volatile unsigned int *)(GICD_BASE + 0x0000))
 
 #define GPT1_GIC_ID 87
 
@@ -36,6 +30,7 @@ static void command_help(void) {
     uart_write("  gpt <seconds>\n");
     uart_write("  hello\n");
     uart_write("  help\n");
+    uart_write("  idle\n");
     uart_write("  md <address>\n");
     uart_write("  reboot\n");
     uart_write("  time\n");
@@ -43,7 +38,7 @@ static void command_help(void) {
 }
 
 static void command_uname(void) {
-    uart_write("[Bare-Metal i.MX8MP by Pierre GENARD (PGEN) #9]\n");
+    uart_write("[BareCore by Pierre GENARD (PGEN) #10]\n");
     uart_write("  UART Driver with RX Interrupts\n");
     uart_write("  UART Driver with TX Polling\n");
     uart_write("  UART Circular Buffer\n");
@@ -54,6 +49,19 @@ static void command_uname(void) {
     uart_write("  Uptime Command\n");
     uart_write("  Cooperative Scheduler\n");
     uart_write("  Clock Tree Description\n");
+}
+
+void command_idle(void) {
+    unsigned long entries = scheduler_get_idle_count();
+    unsigned long wakeups = scheduler_get_idle_wake_count();
+
+    uart_write("Idle entries : ");
+    uart_print_dec(entries);
+    uart_write("\n");
+
+    uart_write("Idle wakeups : ");
+    uart_print_dec(wakeups);
+    uart_write("\n");
 }
 
 static void command_hello(void) {
@@ -197,6 +205,9 @@ void shell_command_execute(const char *cmd) {
     }
     else if (!strcmp(cmd, "uname")) {
         command_uname();
+    }
+    else if (!strcmp(cmd, "idle")) {
+        command_idle();
     }
     else {
         command_unknown();

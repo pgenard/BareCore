@@ -31,6 +31,7 @@
 #define RX_BUFFER_SIZE 128
 
 volatile unsigned char rx_buffer[RX_BUFFER_SIZE];
+
 volatile unsigned int rx_head = 0;
 volatile unsigned int rx_tail = 0;
 
@@ -106,7 +107,7 @@ void uart_init(void) {
     UART_REG(UCR1) = 0x0201;
 }
 
-void uart_write(const unsigned char* data) {
+void uart_write(const char* data) {
     while (*data) {
         uart_putchar(*data++);
     }
@@ -149,7 +150,7 @@ void uart_print_hex(unsigned int value) {
 
     buf[8] = '\0';
     
-    uart_write((const unsigned char*) buf);
+    uart_write((const char*) buf);
 }
 
 void uart_print_dec(unsigned int value) {

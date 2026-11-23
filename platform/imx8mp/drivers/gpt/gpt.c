@@ -121,3 +121,12 @@ void gpt_delay_seconds(unsigned int seconds) {
     asm volatile("wfe");
   }
 }
+
+void gpt_delay_us(unsigned int us) {
+    unsigned int ticks = us * 16U;
+    unsigned int start = gpt_read_cnt();
+
+    while ((unsigned int)(gpt_read_cnt() - start) < ticks) {
+        asm volatile("nop");
+    }
+}

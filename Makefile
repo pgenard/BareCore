@@ -13,7 +13,9 @@ CFLAGS = -mcpu=cortex-a53 -ffreestanding -Wall -Werror -Wextra -MMD -MP \
          -Iplatform/imx8mp -Iplatform/imx8mp/clock \
          -Iplatform/imx8mp/drivers/uart \
          -Iplatform/imx8mp/drivers/gpt \
-	 -Iplatform/imx8mp/drivers/watchdog
+	 -Iplatform/imx8mp/drivers/watchdog \
+         -Iplatform/imx8mp/drivers/gpio \
+         -Iplatform/imx8mp/drivers/soft_uart
 
 ASFLAGS = -mcpu=cortex-a53
 LDFLAGS = -T linker.ld
@@ -25,7 +27,9 @@ C_SRCS = shell/shell.c \
          kernel/scheduler/scheduler.c \
          kernel/time/systime.c \
          platform/imx8mp/drivers/gpt/gpt.c \
+         platform/imx8mp/drivers/gpio/gpio_imx8mp.c \
          platform/imx8mp/drivers/uart/uart_imx8.c \
+         platform/imx8mp/drivers/soft_uart/soft_uart.c \
          platform/imx8mp/drivers/watchdog/watchdog.c \
          platform/imx8mp/clock/imx8mp_clock.c \
          platform/imx8mp/clock/imx8mp_clock_root.c \

@@ -7,6 +7,8 @@
 #include "scheduler.h"
 #include "imx8mp_clock.h"
 #include "shell.h"
+#include "gpio_imx8mp.h"
+#include "soft_uart.h"
 
 #define UART1_GIC_ID 58
 #define GPT1_GIC_ID 87
@@ -30,6 +32,9 @@ static inline void route_irq_to_el2(void) {
 int main(void) {
     uart_init();
     gpt_init();
+    gpio_init();
+    soft_uart_init();
+
     imx8mp_clock_init();
 
     gpt_enable_irq();

@@ -5,6 +5,8 @@
 #include "systime.h"
 #include "imx8mp_clock.h"
 #include "scheduler.h"
+#include "gpio_imx8mp.h"
+#include "soft_uart.h"
 
 #define GPT1_BASE 0x302D0000UL
 #define GICD_BASE 0x38800000UL
@@ -27,12 +29,14 @@
 static void command_help(void) {
     uart_write("Commands:\n");
     uart_write("  clock\n");
+    uart_write("  gpio\n");
     uart_write("  gpt <seconds>\n");
     uart_write("  hello\n");
     uart_write("  help\n");
     uart_write("  idle\n");
     uart_write("  md <address>\n");
     uart_write("  reboot\n");
+    uart_write("  softuart\n");
     uart_write("  time\n");
     uart_write("  uname\n");
 }
@@ -50,7 +54,98 @@ static void command_uname(void) {
     uart_write("  Cooperative Scheduler\n");
     uart_write("  IDLE State (Low Power)\n");
     uart_write("  Clock Tree Description\n");
+    uart_write("  GPIO Test\n");
 }
+
+static void command_soft_uart(void) {
+    uart_write("Sending software UART message on GPIO1_IO00...\n");
+    soft_uart_puts("Hello from GPIO UART!\n");
+    uart_write("Transmission completed.\n");
+}
+
+static void command_gpio(void) {
+    uint32_t dr;
+    uint32_t gdir;
+
+    uart_write("GPIO1_IO00 diagnostic\n");
+
+    gpio_set_direction(GPIO1_BASE, 0, GPIO_OUTPUT);
+
+    for (int i = 0; i < 5; i++) {
+
+        gpio_write(GPIO1_BASE, 0, 1);
+
+        dr = *(volatile uint32_t *)(GPIO1_BASE + GPIO_DR);
+        gdir = *(volatile uint32_t *)(GPIO1_BASE + GPIO_GDIR);
+
+        uart_write("HIGH: DR=");
+        uart_print_hex(dr);
+        uart_write(" GDIR=");
+        uart_print_hex(gdir);
+        uart_write("\n");
+
+        gpt_delay_us(500000);
+
+        gpio_write(GPIO1_BASE, 0, 0);
+
+        dr = *(volatile uint32_t *)(GPIO1_BASE + GPIO_DR);
+
+        uart_write("LOW:  DR=");
+        uart_print_hex(dr);
+        uart_write("\n");
+
+        gpt_delay_us(500000);
+    }
+
+    uart_write("GPIO test completed.\n");
+}
+
+/* static void command_gpio_wave(void) {
+    gpio_set_direction(GPIO1_BASE, 0, GPIO_OUTPUT);
+    uart_write("Generating GPIO square wave...\n");
+
+    while (1) {
+        gpio_write(GPIO1_BASE, 0, 1);
+        gpt_delay_us(100);
+
+        gpio_write(GPIO1_BASE, 0, 0);
+        gpt_delay_us(100);
+    }
+    } */
+
+/* static void command_gpio(void) {
+    unsigned int value;
+
+    uart_write("GPIO test: GPIO1_IO00\n");
+
+    // Configure pin as output
+    gpio_set_direction(GPIO1_BASE, 0, GPIO_OUTPUT);
+
+    for (int i = 0; i < 5; i++) {
+
+        gpio_write(GPIO1_BASE, 0, 1);
+
+        gpt_delay_us(500000);
+
+        value = gpio_read(GPIO1_BASE, 0);
+
+        uart_write("GPIO HIGH: ");
+        uart_print_dec(value);
+        uart_write("\n");
+
+        gpio_write(GPIO1_BASE, 0, 0);
+
+        gpt_delay_us(500000);
+
+        value = gpio_read(GPIO1_BASE, 0);
+
+        uart_write("GPIO LOW: ");
+        uart_print_dec(value);
+        uart_write("\n");
+    }
+
+    uart_write("GPIO test completed.\n");
+    } */
 
 void command_idle(void) {
     unsigned long entries = scheduler_get_idle_count();
@@ -209,6 +304,12 @@ void shell_command_execute(const char *cmd) {
     }
     else if (!strcmp(cmd, "idle")) {
         command_idle();
+    }
+    else if (!strcmp(cmd, "gpio")) {
+        command_gpio();
+    }
+    else if (!strcmp(cmd, "softuart")) {
+        command_soft_uart();
     }
     else {
         command_unknown();

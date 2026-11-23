@@ -21,5 +21,6 @@ void gpt_start_one_shot(unsigned int);
 void gpt_delay_seconds(unsigned int);
 void gpt_start_periodic(unsigned int);
 void gpt_test_compare(unsigned int);
+void gpt_delay_us(unsigned int);
 
 #endif
